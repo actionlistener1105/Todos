@@ -72,7 +72,15 @@ public class TodosTest {
         Assertions.assertTrue(meeting.matches(query));
     }
 
-    
+    @Test
+    public void shouldReturnFalseUponQueryMeetingTest(){
+        String topic = "Встреча с лидом";
+        String pro = "Игра на vue.js";
+        String time = "Завтра в 12:00";
+        Meeting meeting = new Meeting(22, topic, pro, time);
+        String query = "17";
+        Assertions.assertFalse(meeting.matches(query));
+    }
 
     @Test
     public void shouldFindTaskUponQueryInTodosTest(){
