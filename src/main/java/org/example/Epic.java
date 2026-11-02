@@ -19,6 +19,15 @@ public class Epic extends Task{
         return false;
     }
 
+//    @Override
+//    public boolean matches(String query) {
+//        if (query == null || query.isBlank()) {
+//            return false; // или true, если пустая строка должна находить всё
+//        }
+//        return title.toLowerCase().contains(query.toLowerCase());
+//    }
+
+
     public String[] getSubTasks(){
         return subTasks;
     }
