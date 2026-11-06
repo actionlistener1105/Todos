@@ -2,11 +2,6 @@ package org.example;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TodosTest {
@@ -112,45 +107,57 @@ public class TodosTest {
         Assertions.assertArrayEquals(expected, actual);
     }
 
+    // Возвращает несколько таск
     @Test
     void shouldReturnMultipleTasksWhenQueryMatchesSeveral() {
         Todos todos = new Todos();
-        todos.add(new SimpleTask(1, "Купить молоко"));
-        String[] tasks = {"Купить хлеб", "Купить хлеб белый", "Хлеб черный"};
-        todos.add(new Epic(2, tasks));
-        todos.add(new Meeting(3, "Созвон с шефом", "Проект для ITProger", "В 12:00"));
+
+        // Добавляем задачи в строго определённом порядке, иначе Assertions.assertArrayEquals не сработает
+        SimpleTask task1 = new SimpleTask(1, "Купить молоко");
+        todos.add(task1);
+
+        String[] subtasks = {"Купить хлеб", "Купить хлеб белый", "Хлеб черный"};
+        Epic epic2 = new Epic(2, subtasks);
+        todos.add(epic2);
+
+        Meeting meeting3 = new Meeting(3, "Созвон с шефом", "Проект для ITProger", "В 12:00");
+        todos.add(meeting3);
 
         String query = "Купить";
         Task[] result = todos.search(query);
+        Task[] expected = new Task[]{task1, epic2};
 
-        assertEquals(2, result.length, "Должно найтись ровно 2 задачи с 'купить'");
-        Set<Integer> foundIds = Arrays.stream(result)
-                .map(Task::getId)
-                .collect(Collectors.toSet());
-        assertTrue(foundIds.contains(1));
-        assertTrue(foundIds.contains(2));
+        Assertions.assertArrayEquals(expected, result);
     }
 
+    // Должен вернуть одну задачу
     @Test
     void shouldReturnSingleTaskWhenQueryMatchesOne() {
-
         Todos todos = new Todos();
-        todos.add(new SimpleTask(101, "Оплатить интернет"));
+
+        SimpleTask task101 = new SimpleTask(101, "Оплатить интернет");
+        todos.add(task101);
+
         String[] tasks = {"Заказать пиццу", "Пепперони"};
-        todos.add(new Epic(102, tasks));
-        todos.add(new Meeting(103, "Свидание", "В Шоколаднице", "в 18:00 в субботу"));
+        Epic epic102 = new Epic(102, tasks);
+        todos.add(epic102);
+
+        Meeting meeting103 = new Meeting(103, "Свидание", "В Шоколаднице", "в 18:00 в субботу");
+        todos.add(meeting103);
 
         String query = "пиццу";
 
         Task[] result = todos.search(query);
+        Task[] expected = new Task[]{epic102};
 
-        assertEquals(1, result.length, "Должна найтись ровно одна задача с 'пицца'");
-        assertEquals(102, result[0].getId());
+        Assertions.assertArrayEquals(expected, result);
     }
 
+    // Должен вернуть пустой массив, если совпадений нет
     @Test
     void shouldReturnEmptyArrayWhenNoTasksMatch() {
         Todos todos = new Todos();
+
         todos.add(new SimpleTask(501, "Сдать отчёт"));
         String[] tasks = {"Помыть машину", "Только в сухую погоду"};
         todos.add(new Epic(502, tasks));
@@ -158,9 +165,8 @@ public class TodosTest {
         String query = "починить велосипед"; // такого нет
 
         Task[] result = todos.search(query);
-
-        assertNotNull(result, "Результат поиска не должен быть null");
-        assertEquals(0, result.length, "При отсутствии совпадений должен возвращаться пустой массив");
+        Task[] expected = new Task[]{};
+        Assertions.assertArrayEquals(expected, result);
     }
 
 }
